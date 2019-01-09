@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lelai.sales.dao.TUserDesignCourseDetailDao">
+    
+	<sql id="tUserDesignCourseDetailColumns">
+		a.id AS "id",
+		a.t_user_design_course_id AS "tUserDesignCourseId",
+		a.body AS "body",
+		a.muscle AS "muscle",
+		a.movement AS "movement",
+		a.group_num AS "groupNum",
+		a.intensity AS "intensity",
+		a.intensity_num AS "intensityNum",
+		a.intensity_unit AS "intensityUnit",
+		a.update_by AS "updateBy",
+		a.update_time AS "updateTime",
+		a.remarks AS "remarks",
+		a.create_by AS "createBy",
+		a.create_time AS "createTime"
+	</sql>
+	
+	<sql id="tUserDesignCourseDetailJoins">
+	</sql>
+	
+	<select id="getList" resultType="com.lelai.sales.domain.design.TUserDesignCourseDetail">
+		SELECT 
+			<include refid="tUserDesignCourseDetailColumns"/>
+		FROM t_user_design_course_detail a
+		<include refid="tUserDesignCourseDetailJoins"/>
+		WHERE t_user_design_course_id = #{tUserDesignCourseId}
+	</select>
+
+	<select id="getAll" resultType="com.lelai.sales.domain.design.TUserDesignCourseDetail">
+		SELECT
+		<include refid="tUserDesignCourseDetailColumns"/>
+		FROM t_user_design_course_detail a
+		<include refid="tUserDesignCourseDetailJoins"/>
+		WHERE t_user_design_course_id in
+		(select id from t_user_design_course
+			WHERE code= (select code from t_user_design_course WHERE id =#{tUserDesignCourseId})
+			AND t_user_design_id = (select t_user_design_id from t_user_design_course WHERE id =#{tUserDesignCourseId}))
+	</select>
+	
+	<insert id="insert">
+		<selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		INSERT INTO t_user_design_course_detail(
+			t_user_design_course_id,
+			body,
+			muscle,
+			movement,
+			group_num,
+			intensity,
+			intensity_num,
+			intensity_unit,
+			update_by,
+			update_time,
+			remarks,
+			create_by,
+			create_time
+		) VALUES (
+			#{tUserDesignCourseId},
+			#{body},
+			#{muscle},
+			#{movement},
+			#{groupNum},
+			#{intensity},
+			#{intensityNum},
+			#{intensityUnit},
+			#{updateBy},
+			#{updateTime},
+			#{remarks},
+			#{createBy},
+			#{createTime}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_user_design_course_detail SET 	
+			t_user_design_course_id = #{tUserDesignCourseId},
+			body = #{body},
+			muscle = #{muscle},
+			movement = #{movement},
+			group_num = #{groupNum},
+			intensity = #{intensity},
+			intensity_num = #{intensityNum},
+			intensity_unit = #{intensityUnit},
+			update_by = #{updateBy},
+			update_time = #{updateTime},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+
+	<update id="deleteAll">
+		DELETE FROM t_user_design_course_detail
+		WHERE t_user_design_course_id = #{tUserDesignCourseId}
+	</update>
+
+	<update id="deleteByCourse">
+		DELETE FROM t_user_design_course_detail
+		WHERE t_user_design_course_id in (select id from t_user_design_course WHERE t_user_design_id=#{tUserDesignId} AND code=#{code})
+	</update>
+
+	<update id="delete">
+		DELETE FROM t_user_design_course_detail
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

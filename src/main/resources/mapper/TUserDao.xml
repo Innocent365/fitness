@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lelai.sales.dao.TUserDao">
+
+
+    <sql id="tUserColumns">
+        u.id AS "id",
+        u.is_case AS "isCase",
+        u.real_name AS "realName",
+        u.telephone AS "telephone",
+        gender AS "gender",
+        user_no AS "userNo",
+        help_way AS "helpWay",
+
+        (SELECT TIMESTAMPDIFF(YEAR, birth, CURDATE())) AS "age",
+
+        ct.start_time AS "joinDate",
+        ROUND(DATEDIFF(CURDATE(), ct.start_time)/7, 0) AS "courseCycle",
+        (select count(id) from t_course_user cu WHERE u.id=cu.user_id and cu.order_status=2) AS "courseTotal",
+
+        xf.path AS "beginningPhotoPath",
+        xe.path AS "finishedPhotoPath"
+    </sql>
+
+    <sql id="tUserJoins">
+        left join t_contract ct on(u.id=ct.user_id)
+        left join t_xfile xf on (u.beginning_photo=xf.id)
+        left join t_xfile xe on (u.finished_photo=xe.id)
+    </sql>
+
+
+    <select id="findList" resultType="com.lelai.sales.domain.cases.TUser">
+        select
+          <include refid="tUserColumns"></include>
+        from t_user u
+          <include refid="tUserJoins"></include>
+        where ct.contract_type=0
+        <!--<choose>-->
+            <!--<when test="page !=null and page.orderBy != null and page.orderBy != ''">-->
+                <!--ORDER BY ${page.orderBy}-->
+            <!--</when>-->
+            <!--<otherwise>-->
+            <!--</otherwise>-->
+        <!--</choose>-->
+    </select>
+
+
+    <select id="get" resultType="com.lelai.sales.domain.cases.TUser">
+        select
+          <include refid="tUserColumns"></include>
+        from t_user u
+          <include refid="tUserJoins"></include>
+        WHERE u.id = #{id}
+    </select>
+
+    <update id="setIsCase">
+        update t_user set is_case = #{sign} where id = #{id}
+    </update>
+
+    <select id="getBodyDateByUser" resultType="com.lelai.sales.domain.cases.TCustomerBodyData">
+        select id AS "id",
+          user_id AS "userId",
+          height AS "height",
+          weight AS "weight",
+          body_fat_rate AS "bodyFatRate",
+          skeletal_muscle_content AS "skeletalMuscleContent",
+          chest AS "chest",
+          waistline AS "waistline",
+          hipline AS "hipline",
+          left_thigh AS "leftThigh",
+          left_leg AS "leftLeg",
+          left_arm AS "leftArm",
+          right_thigh AS "rightThigh",
+          right_leg AS "rightLeg",
+          right_arm AS "rightArm",
+          record_time AS "recordTime",
+          salt AS "salt",
+          protein AS "protein",
+          visceral_fat AS "visceralFat",
+          BMI AS "bmi",
+          skeletal_muscle AS "skeletalMuscle",
+          body_mass_parameters AS "bodyMassParameters",
+          waist_to_hip_fat AS "waistToHipFat",
+          basal_metabolic_rate AS "basalMetabolicRate",
+          body_fat AS "bodyFat",
+          body_moisture AS "bodyMoisture",
+          visceral_fat_grade AS "visceralFatGrade"
+        from t_customer_body_data
+        where user_id = #{id}
+        order by record_time
+    </select>
+
+    <!--<update id="update">-->
+        <!--UPDATE t_user_design SET-->
+            <!--user_id = #{tUser.id},-->
+            <!--job = #{job},-->
+            <!--age = #{age},-->
+            <!--desired = #{desired},-->
+            <!--level_at = #{levelAt},-->
+            <!--update_by = #{updateBy.id},-->
+            <!--update_date = #{updateDate},-->
+            <!--remarks = #{remarks}-->
+        <!--WHERE id = #{id}-->
+    <!--</update>-->
+
+</mapper>

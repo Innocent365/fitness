@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lelai.sales.dao.TDesignCourseDao">
+    
+	<sql id="tDesignCourseColumns">
+		a.id AS "id",
+		a.code AS "code",
+		a.desired AS "desired",
+		a.period AS "period",
+		a.content AS "content",
+		a.remarks AS "remark",
+		a.create_time AS "createTime",
+		a.update_time AS "updateTime"
+	</sql>
+
+
+	
+	<sql id="tDesignCourseJoins">
+	</sql>
+    
+	<select id="getByDesired" resultType="com.lelai.sales.domain.design.TDesignCourse">
+		SELECT 
+			<include refid="tDesignCourseColumns"/>
+		FROM t_design_course a
+		<include refid="tDesignCourseJoins"/>
+		WHERE a.desired = #{desired}
+	</select>
+
+
+</mapper>

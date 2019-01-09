@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lelai.sales.dao.TDesignCourseDetailDao">
+
+	<sql id="tDesignCourseDetailColumns">
+		a.id AS "id",
+		a.t_design_course_id AS "tDesignCourseId",
+		a.body AS "body",
+		a.muscle AS "muscle",
+		a.movement AS "movement",
+		a.group_num AS "groupNum",
+		a.intensity AS "intensity",
+		a.intensity_num AS "intensityNum",
+		a.intensity_unit AS "intensityUnit",
+		a.create_time AS "createTime",
+		a.update_time AS "updateTime"
+	</sql>
+	
+	<sql id="tDesignCourseDetailJoins">
+	</sql>
+    
+	<select id="get" resultType="TDesignCourseDetail">
+		SELECT 
+			<include refid="tDesignCourseDetailColumns"/>
+		FROM t_design_course_detail a
+		<include refid="tDesignCourseDetailJoins"/>
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="getCourseDetailByCode" resultType="com.lelai.sales.domain.design.TDesignCourseDetail">
+		select
+		<include refid="tDesignCourseDetailColumns"/>
+		from t_design_course_detail a
+		where a.t_design_course_id in (select id from t_design_course where code = #{code} )
+	</select>
+
+	<select id="getCourseDetailById" resultType="com.lelai.sales.domain.design.TDesignCourseDetail">
+		select
+		<include refid="tDesignCourseDetailColumns"/>
+		from t_design_course_detail a
+		where a.t_design_course_id = #{designCourseId}
+	</select>
+
+	
+	<insert id="insert">
+		INSERT INTO t_design_course_detail(
+			id,
+			t_design_course_id,
+			body,
+			muscle,
+			movement,
+			group_num,
+			intensity,
+			intensity_num,
+			intensity_unit,
+			create_time,
+			update_time
+		) VALUES (
+			#{id},
+			#{tDesignCourseId},
+			#{body},
+			#{muscle},
+			#{movement},
+			#{groupNum},
+			#{intensity},
+			#{intensityNum},
+			#{intensityUnit},
+			#{createTime},
+			#{updateTime}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE t_design_course_detail SET 	
+			t_design_course_id = #{tDesignCourseId},
+			body = #{body},
+			muscle = #{muscle},
+			movement = #{movement},
+			group_num = #{groupNum},
+			intensity = #{intensity},
+			intensity_num = #{intensityNum},
+			intensity_unit = #{intensityUnit},
+			create_time = #{createTime},
+			update_time = #{updateTime}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM t_design_course_detail
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

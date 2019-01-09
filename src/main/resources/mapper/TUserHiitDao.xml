@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lelai.sales.dao.TUserHiitDao">
+
+    <sql id="tUserHiitColumns">
+		a.id AS "id",
+		a.user_id AS "userId",
+		a.feeling AS "feeling",
+		a.record_date AS "recordDate",
+		a.remarks AS "remarks",
+		a.create_by AS "createBy",
+		a.update_time AS "updateTime",
+		a.update_by AS "updateBy",
+		a.create_time AS "createTime"
+	</sql>
+
+    <sql id="tUserHiitJoins">
+
+	</sql>
+
+    <select id="get" resultType="com.lelai.sales.domain.cases.TUserHiit">
+        SELECT
+        <include refid="tUserHiitColumns"/>
+        FROM t_user_hiit a
+        <include refid="tUserHiitJoins"/>
+        WHERE a.id = #{id}
+    </select>
+
+    <select id="findList" resultType="com.lelai.sales.domain.cases.TUserHiit">
+        SELECT
+        <include refid="tUserHiitColumns"/>
+        FROM t_user_hiit a
+        <include refid="tUserHiitJoins"/>
+        where user_id=#{id}
+    </select>
+
+
+    <insert id="insert" parameterType="com.lelai.sales.domain.cases.TUserHiit">
+		<selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		INSERT INTO t_user_hiit(
+			user_id,
+			feeling,
+			record_date,
+			remarks,
+			create_by,
+			create_time
+		) VALUES (
+			#{userId},
+			#{feeling},
+			#{recordDate},
+			#{remarks},
+			#{createBy},
+			NOW()
+		)
+	</insert>
+
+    <update id="update">
+		UPDATE t_user_hiit SET
+			user_id = #{userId},
+			feeling = #{feeling},
+			record_date = #{recordDate},
+			remarks = #{remarks},
+			update_time = NOW(),
+			update_by = #{updateBy}
+		WHERE id = #{id}
+	</update>
+
+    <update id="delete">
+		DELETE FROM t_user_hiit
+		WHERE id = #{id}
+	</update>
+
+</mapper>

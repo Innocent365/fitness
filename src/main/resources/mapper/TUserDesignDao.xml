@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lelai.sales.dao.TUserDesignDao">
+
+
+    <sql id="tUserDesignColumns">
+		a.id AS "id",
+		a.user_name AS "userName",
+		a.user_age AS "userAge",
+		a.user_gender AS "userGender",
+		a.user_telephone AS "userTelephone",
+		a.user_job AS "userJob",
+		a.desired AS "desired",
+		a.level_at AS "levelAt",
+		a.create_by AS "createBy",
+		a.create_time AS "createTime",
+		a.update_by AS "updateBy",
+		a.update_time AS "updateTime",
+		a.remarks AS "remarks",
+		a.designer AS "designer",
+		a.design_time AS "designTime"
+    </sql>
+
+    <sql id="tUserDesignJoins">
+        <!-- left join t_user_design_course dc on(d.id = dc.design_id)
+        left join t_user u on (d.user_id = u.id)
+        left join sys_user su on (d.create_by = su.id)        -->
+    </sql>
+
+
+    <select id="getList" resultType="com.lelai.sales.domain.design.TUserDesign">
+        select
+          <include refid="tUserDesignColumns"/>
+        from t_user_design a
+          <include refid="tUserDesignJoins"/>
+    </select>
+
+    <select id="get" resultType="com.lelai.sales.domain.design.TUserDesign">
+        SELECT
+        <include refid="tUserDesignColumns"/>
+        FROM t_user_design a
+        <include refid="tUserDesignJoins"/>
+        WHERE a.id = #{id}
+    </select>
+
+    <insert id="insert">
+		<selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		INSERT INTO t_user_design(
+			user_name,
+			user_age,
+			user_gender,
+			user_telephone,
+			user_job,
+			desired,
+			level_at,
+			create_by,
+			create_time,
+			update_by,
+			update_time,
+			remarks,
+			designer,
+			design_time
+		) VALUES (
+			#{userName},
+			#{userAge},
+			#{userGender},
+			#{userTelephone},
+			#{userJob},
+			#{desired},
+			#{levelAt},
+			#{createBy},
+			sysdate(),
+			#{updateBy},
+			#{updateTime},
+			#{remarks},
+			#{designer},
+			#{designTime}
+		)
+	</insert>
+
+
+    <update id="update">
+		UPDATE t_user_design SET
+			user_name = #{userName},
+			user_age = #{userAge},
+			user_gender = #{userGender},
+			user_telephone = #{userTelephone},
+			user_job = #{userJob},
+			desired = #{desired},
+			level_at = #{levelAt},
+			create_time = #{createTime},
+			update_by = #{updateBy},
+			update_time = #{updateTime},
+			remarks = #{remarks},
+			designer = #{designer},
+			design_time = #{designTime}
+		WHERE id = #{id}
+	</update>
+
+
+
+</mapper>

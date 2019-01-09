@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lelai.sales.dao.TUserHiitDetailDao">
+
+    <sql id="tUserHiitColumns">
+		a.id AS "id",
+		a.t_user_hiit_id AS "tUserHiitId",
+		a.content AS "content",
+		a.duration AS "duration",
+		a.intervals AS "intervals",
+		a.group_num AS "groupNum",
+		a.create_by AS "createBy",
+		a.update_time AS "updateTime",
+		a.update_by AS "updateBy",
+		a.create_time AS "createTime"
+	</sql>
+
+    <sql id="tUserHiitJoins">
+
+	</sql>
+
+    <select id="get" resultType="com.lelai.sales.domain.cases.TUserHiitDetail">
+        SELECT
+        <include refid="tUserHiitColumns"/>
+        FROM t_user_hiit a
+        <include refid="tUserHiitJoins"/>
+        WHERE a.id = #{id}
+    </select>
+
+    <select id="findList" resultType="com.lelai.sales.domain.cases.TUserHiitDetail">
+        SELECT
+        <include refid="tUserHiitColumns"/>
+        FROM t_user_hiit_detail a
+        <include refid="tUserHiitJoins"/>
+        where t_user_hiit_id=#{hiitId}
+    </select>
+
+
+    <insert id="insert" parameterType="com.lelai.sales.domain.cases.TUserHiitDetail">
+		INSERT INTO t_user_hiit_detail(
+			t_user_hiit_id,
+			content,
+			duration,
+			intervals,
+			group_num,
+			create_by,
+			create_time
+		) VALUES (
+			#{tUserHiitId},
+			#{content},
+			#{duration},
+			#{intervals},
+			#{groupNum},
+			#{createBy},
+			NOW()
+		)
+	</insert>
+
+    <update id="update">
+		UPDATE t_user_hiit_detail SET
+			t_user_hiit_id = #{tUserHiitId},
+			content = #{content},
+			duration = #{duration},
+			intervals = #{intervals},
+			group_num = #{groupNum},
+			update_time = NOW(),
+			update_by = #{updateBy}
+		WHERE id = #{id}
+	</update>
+
+    <update id="deleteList">
+		DELETE FROM t_user_hiit_detail
+		WHERE t_user_hiit_id = #{hiitId}
+	</update>
+
+</mapper>

@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lelai.sales.dao.TUserCourseDao">
+
+    <update id="savePhoto">
+        update t_user set
+        <choose>
+            <when test="gender==1">
+                beginning_photo = #{beginningPhoto}
+            </when>
+            <otherwise>
+                finished_photo = #{finishedPhoto}
+            </otherwise>
+        </choose>
+        where id=#{id}
+    </update>
+    <insert id="insertXFile">
+        <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="id">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        INSERT INTO t_xfile(
+            name,
+            oname,
+            path,
+            size,
+            content_type,
+            create_date,
+            is_image,
+            type
+        ) VALUES (
+            #{name},
+            #{oname},
+            #{path},
+            #{size},
+            #{contentType},
+            NOW(),
+            #{isImage},
+            #{type}
+        )
+    </insert>
+
+
+    <select id="getTUserTrainCourseByUser" resultType="com.lelai.sales.domain.cases.TUserTrainCourse">
+        select cm.couse_id AS "id",
+              count(cm.id) AS "trainTimes"
+        from t_course_user cu inner join t_course_manage cm on(cu.course_id=cm.id)
+        where cu.user_id=#{id} and cu.order_status=2 group by cm.couse_id
+    </select>
+
+
+    <select id="getTUserTrainPartByUser" resultType="com.lelai.sales.domain.cases.TUserTrainPart">
+        select body AS name, count(action_id) AS times
+        from t_train_action
+        WHERE plan_id in (select plan_id from t_train_plan
+                          where order_id in (select id from t_course_user WHERE user_id = #{id}))
+        group by body;
+    </select>
+
+    <select id="getTUserTrainDailyByUser" resultType="com.lelai.sales.domain.cases.TUserTrainDaily">
+        select cu.id AS "id",
+           cm.start_time AS "startTime",
+           cm.end_time AS "endTime",
+
+           cm.couse_id AS "courseId",
+           cu.order_time AS "orderTime"
+        from t_course_user cu
+        inner join t_course_manage cm on (cu.course_id = cm.id)
+        WHERE user_id = #{id} and cu.order_status = 2
+        order by cm.start_time desc
+    </select>
+
+    <select id="getTUserTrainMovement" resultType="com.lelai.sales.domain.cases.TUserTrainMovement">
+        select plan_id AS "id",
+            body AS "part",
+            bodydetail AS "location",
+            actionname AS "movement",
+
+            IF(actualIntenity is null, planIntensity, actualIntenity) AS "intensity",
+            IF(actualNum is null, planNum, actualNum) AS "groupNum"
+--             IF(actualTime is null, planTimes, actualTime) AS "",
+--             planNum AS "",
+--             planTimes AS "",
+--
+--             actualIntenity AS "",
+--             actualNum AS "",
+--             actualTime AS ""
+
+        from t_train_action
+        WHERE plan_id = (select plan_id from t_train_plan WHERE order_id = #{id});
+    </select>
+
+    <select id="getTUserStrength" resultType="com.lelai.sales.domain.modules.TTrainAction">
+        select action_id AS "actionId",
+          body AS "body",
+          bodydetail AS "bodydetail",
+          actionname AS "actionname",
+          action_code AS "actionCode",
+
+          remark AS "remark",
+          plan_id AS "planId",
+          planintensity AS "planintensity",
+          plannum AS "plannum",
+          plantimes AS "plantimes",
+
+          actualintenity AS "actualintenity",
+          actualnum AS "actualnum",
+          actualtime AS "actualtime"
+
+        from t_train_action
+        WHERE planIntensity like '%kg%' and
+          plan_id in (select plan_id from t_train_plan where order_id in (select id from t_course_user WHERE user_id = #{id}))
+        order by bodydetail
+    </select>
+
+    <select id="getTrainDescribe" resultType="com.lelai.sales.domain.cases.TUserTrainDaily">
+        select
+          start_time AS "startTime",
+          end_time AS "endTime",
+
+          couse_id AS "courseId",
+          order_sequence AS "sort"
+        from t_course_user cu left join t_course_manage cm on (cu.course_id=cm.id)
+        WHERE cu.id = (select order_id from t_train_plan WHERE plan_id = #{planId})
+    </select>
+
+    <select id="getTCourseStoreManage" resultType="com.lelai.sales.domain.modules.TCourseStoreManage">
+        select
+            sm.id AS "id",
+            sm.course_name  AS "courseName",
+            sm.course_price  AS "coursePrice",
+            sm.content  AS "content",
+            sm.course_number AS "courseNumber",
+            sm.course_type AS "courseType",
+
+            sm.coach_id AS "coachId",
+            su.name AS "coachName"
+        from t_course_store_manage sm
+        left join sys_user su on (sm.coach_id = su.id)
+--         where sm.course_status = 0
+    </select>
+
+    <!--<update id="update">-->
+    <!--UPDATE t_user_design SET-->
+    <!--user_id = #{tUser.id},-->
+    <!--job = #{job},-->
+    <!--age = #{age},-->
+    <!--desired = #{desired},-->
+    <!--level_at = #{levelAt},-->
+    <!--update_by = #{updateBy.id},-->
+    <!--update_date = #{updateDate},-->
+    <!--remarks = #{remarks}-->
+    <!--WHERE id = #{id}-->
+    <!--</update>-->
+
+</mapper>
