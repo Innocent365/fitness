@@ -1,4 +1,6 @@
 /target/
+/out/
+/classes/
 !.mvn/wrapper/maven-wrapper.jar
 application.properties
 
